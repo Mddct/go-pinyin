@@ -99,6 +99,38 @@ var finalExceptionsMap = map[string]string{
 var reFinalExceptions = regexp.MustCompile("^(j|q|x)(ū|ú|ǔ|ù)$")
 var reFinal2Exceptions = regexp.MustCompile("^(j|q|x)u(\\d?)$")
 
+//  iu -> iou
+var IUMAP = map[string]string {
+    "iu": "iou",
+    "iū": "ioū",
+    "iú": "ioú",
+    "iǔ": "ioǔ",
+    "iù": "ioù",
+}
+var reFinalIU = regexp.MustCompile("^([a-z]+)(iū|iù|iǔ|iú|iu)$")
+
+// ui -> uei
+var UIMAP = map[string]string{
+    "ui": "uei",
+    "uī": "ueī",
+    "uí": "ueí",
+    "uǐ": "ueǐ",
+    "uì": "ueì",
+}
+var reFinalUI = regexp.MustCompile("([a-z]+)(uǐ|uí|uì|ui|uī)")
+
+//  un -> uen
+var UNMAP = map[string]string{
+    "un": "uen",
+    "ūn": "ūen",
+    "ún": "úen",
+    "ǔn": "ǔen",
+    "ùn": "ùen",
+}
+var reFinalUN = regexp.MustCompile("([a-z]+)(ún|un|ùn|ǔn|ūn)$")
+
+
+
 // NewArgs 返回包含默认配置的 `Args`
 func NewArgs() Args {
 	return Args{Style, Heteronym, Separator, Fallback}
@@ -136,8 +168,26 @@ func final(p string) string {
 		v, _ := finalExceptionsMap[matches[2]]
 		return v
 	}
+	matches = reFinalIU.FindStringSubmatch(p)
+	if len(matches) == 3 && matches[1] != "" && matches[2] != ""{
+		v, _ := IUMAP[matches[2]]
+		return v
+	}
+	matches = reFinalUI.FindStringSubmatch(p)
+	if len(matches) == 3 && matches[1] != "" && matches[2] != ""{
+		v, _ := UIMAP[matches[2]]
+		return v
+	}
+
+	matches = reFinalUN.FindStringSubmatch(p)
+	if len(matches) == 3 && matches[1] != "" && matches[2] != ""{
+		v, _ := UNMAP[matches[2]]
+		return v
+	}
+
 	// ju -> jv, ju1 -> jv1
 	p = reFinal2Exceptions.ReplaceAllString(p, "${1}v$2")
+
 	return strings.Join(strings.SplitN(p, n, 2), "")
 }
 
