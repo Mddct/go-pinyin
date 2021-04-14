@@ -25,6 +25,8 @@ const (
 	FinalsTone  = 6 // 韵母风格1，带声调，声调在韵母第一个字母上。如： ōng uó
 	FinalsTone2 = 7 // 韵母风格2，带声调，声调在各个韵母之后，用数字 [1-4] 进行表示。如： o1ng uo2
 	FinalsTone3 = 9 // 韵母风格3，带声调，声调在各个拼音之后，用数字 [1-4] 进行表示。如： ong1 uo2
+
+	InitialsFinals = 10 // 声韵母风格，带声调，声调在各个拼音之后，用数字 [1-4] 进行表示。 如：[[zh ong1] [g uo2]]
 )
 
 // 拼音风格(兼容之前的版本)
@@ -100,6 +102,12 @@ var reFinal2Exceptions = regexp.MustCompile("^(j|q|x)u(\\d?)$")
 // NewArgs 返回包含默认配置的 `Args`
 func NewArgs() Args {
 	return Args{Style, Heteronym, Separator, Fallback}
+}
+// 获取单个拼音中的声母 韵母 拼音方案
+// 
+// ret : (initial, final); inital may be empty by  拼音方案
+func initialandfinal(p string)(string, string){
+	return  initial(p), final(p)
 }
 
 // 获取单个拼音中的声母
@@ -226,6 +234,14 @@ func SinglePinyin(r rune, a Args) []string {
 	return pys
 }
 
+// phoneme 拼音转音素
+func Phoneme(s []string) (ret  [][]string){
+	for _, r := range s{
+		initial, final := initialandfinal(r)
+		ret = append(ret, []string{initial, final})
+	}
+	return
+}
 // Pinyin 汉字转拼音，支持多音字模式.
 func Pinyin(s string, a Args) [][]string {
 	pys := [][]string{}

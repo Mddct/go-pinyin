@@ -405,3 +405,8 @@ func TestPinyin_fallback_issue_35(t *testing.T) {
 		t.Errorf("Expected %s, got %s", expect, v)
 	}
 }
+func TestPhoneme(t *testing.T){
+	hans := []string{"zhong", "guo", "ren", "you"}
+	t.Errorf("%v", Phoneme(hans))
+
+}
