@@ -47,38 +47,17 @@ func main() {
 		"ao4":   pinyin.FinalsTone3,
 		"zh_ao": pinyin.InitialsFinals,
 	}
-	v := 0
 	if value, ok := styleValues[*style]; !ok {
 		fmt.Fprintf(os.Stderr, "无效的拼音风格：%s\n", *style)
 		os.Exit(1)
-	} else {
-		v = value
-		if value == pinyin.InitialsFinals{
-			value = pinyin.Tone3
-		}
+	}else{
 		args.Style = value
 	}
-
 	pys := pinyin.Pinyin(strings.Join(hans, ""), args)
 	for _, s := range pys {
 		fmt.Print(strings.Join(s, ","), " ")
 	}
 
-	// 这儿没有gop 所以先采用第一个
-	pyss := []string{}
-	for _, s:= range pys{
-		pyss = append(pyss, s[0])
-	}
-	if v == pinyin.InitialsFinals{
-		line := []string{}
-		for _, phones := range pinyin.Phoneme(pyss){
-			if phones[0] != "" {
-				line = append(line , phones[0])
-			}
-			line = append(line, phones[1])
-		}
-		fmt.Println("\nphones: ",  strings.Join(line , " "))
-	}
 	if len(pys) > 0 {
 		fmt.Println()
 	}
