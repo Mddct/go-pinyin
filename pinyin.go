@@ -286,8 +286,13 @@ func SinglePinyin(r rune, a Args) []string {
 
 // phoneme 拼音转音素
 func Phoneme(s []string) (ret  [][]string){
+	args := Args{}
 	for _, r := range s{
-		initial, final := initialandfinal(r)
+		args.Style = Initials
+		initial := toFixed(r,args)
+
+		args.Style = FinalsTone3
+		final := toFixed(r, args)
 		ret = append(ret, []string{initial, final})
 	}
 	return
@@ -295,11 +300,45 @@ func Phoneme(s []string) (ret  [][]string){
 // Pinyin 汉字转拼音，支持多音字模式.
 func Pinyin(s string, a Args) [][]string {
 	pys := [][]string{}
-	for _, r := range s {
-		py := SinglePinyin(r, a)
-		if len(py) > 0 {
-			pys = append(pys, py)
+	if a.Style != InitialsFinals{
+		for _, r := range s {
+			py := SinglePinyin(r, a)
+			if len(py) > 0 {
+				pys = append(pys, py)
+			}
 		}
+
+	}else{
+		initials := [][]string{}
+		a.Style = Initials
+		for _, r := range s {
+			py := SinglePinyin(r, a)
+			if len(py) > 0 {
+				initials = append(initials, py)
+			}else{
+				initials = append(initials, []string{})
+			}
+		}
+		finals := [][]string{}
+		a.Style = FinalsTone
+		for _, r := range s {
+			py := SinglePinyin(r, a)
+			if len(py) > 0 {
+				finals = append(finals, py)
+			}else{
+				finals = append(finals, []string{})
+			}
+		}
+
+		if len(finals) != len(initials){
+			panic("bug")
+		}
+
+		//gop for 第一个
+		for i, _ := range initials{
+			pys = append(pys ,[]string{initials[i][0], finals[i][0]})
+		}
+
 	}
 	return pys
 }
