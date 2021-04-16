@@ -232,11 +232,6 @@ func toFixed(p string, a Args) string {
 	})
 
 	switch a.Style {
-	// 将声调移动到最后
-	case Tone3, FinalsTone3:
-		py = reTone3.ReplaceAllString(py, "$1$3$2")
-	}
-	switch a.Style {
 	// 首字母
 	case FirstLetter:
 		py = string([]rune(py)[0])
@@ -252,6 +247,13 @@ func toFixed(p string, a Args) string {
 			py = final(py)
 		}
 	}
+
+	switch a.Style {
+	// 将声调移动到最后
+	case Tone3, FinalsTone3 :
+		py = reTone3.ReplaceAllString(py, "$1$3$2")
+	}
+
 	return py
 }
 
